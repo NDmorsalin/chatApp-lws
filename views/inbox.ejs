@@ -1,0 +1,468 @@
+    <%- include('./partial/header.ejs') %>
+    <main class="container position-relative p-0 my-4 message-container
+    ">
+        <div class="row g-0 h-100">
+            <div id="drag" class="col-md-5 position-relative  h-100 px-0">
+                <!-- in small device it is fix  -->
+                <div class="message-list d-flex flex-column">
+                    <!-- chat list -->
+                    <div class="py-2 px-3">
+                        <div class="search-wrapper">
+                            <input type="search" class="search" id="search" placeholder=" search ">
+                        </div>
+                    </div>
+
+                    <div>
+                        <% data.forEach(conversation => {  %>
+                        <% if (conversation.creator.id.toString().split('"').join('') === loggedInUser.userId) { %>
+
+                        <div onclick="getMessages('<%=conversation._id%>','<%=conversation.participant.userName%>')"
+                            class="user_container d-flex justify-content-between align-items-center">
+                            <div class="user_pic d-flex justify-content-start align-items-center">
+                                <% if (conversation.participant.avatar) { %>
+                                <img src="/upload/avatar/<%=conversation.participant.avatar  %> " class="user_avatar"
+                                    alt="<%=conversation.participant.userName%>">
+                                <% }else{ %>
+                                <img src="/img/nophoto.png" class="user_avatar"
+                                    alt="<%=conversation.participant.userName%>">
+                                <% } %>
+                                <div class="user_info">
+                                    <p class="user_name"><%=conversation.participant.userName%></p>
+                                </div>
+                            </div>
+                            <h4 class="last_update">
+                                <%= conversation.participant.last_update%>
+                            </h4>
+                        </div>
+                        <% }else{  %>
+
+
+                        <div onclick="getMessages('<%=conversation._id%>','<%=conversation.creator.userName%>')"
+                            class="user_container d-flex justify-content-between align-items-center">
+                            <div class="user_pic d-flex justify-content-start align-items-center">
+                                <% if (conversation.creator.avatar) { %>
+                                <img src="/upload/avatar/<%=conversation.creator.avatar  %> " class="user_avatar"
+                                    alt="<%=conversation.creator.userName%>">
+                                <% }else{ %>
+                                <img src="/img/nophoto.png" class="user_avatar"
+                                    alt="<%=conversation.creator.userName%>">
+                                <% } %>
+                                <div class="user_info">
+                                    <p class="user_name"><%=conversation.creator.userName%></p>
+                                </div>
+                            </div>
+                            <h4 class="last_update">
+                                <%= conversation.creator.last_update%>
+                            </h4>
+                        </div>
+                        <% } %>
+
+                        <% }) %>
+                    </div>
+                </div>
+
+                <div class="add__user">
+                    <div class="add__btn">+</div>
+                </div>
+
+            </div>
+            <div class="col-md-7 bg-dark h-100 px-0">
+                <div class="message  d-none flex-column justify-content-between">
+                    <div class="message_head d-flex justify-content-between align-items-center py-2 px-3 ">
+                        <h3 class="conversationUserName"></h3>
+                        <div class="deleteConversation btn btn-danger">dlt</div>
+                    </div>
+                    <div class="message_body-container">
+                        <div class="message_body" id="scrollToDown"> </div>
+                        <form id="sendMessageForm" enctype="multipart/form-data"
+                            class="message_footer  d-flex px-3 py-2 align-items-center justify-content-between">
+
+                            <input type="file" name="attach" id="attach" class="attach d-none" multiple>
+
+                            <button type="button" id="attach-btn" class="attach-btn"> attach </button>
+
+                            <div class="message_area">
+                                <input type="text" placeholder=" Type your message" name="message">
+                            </div>
+
+                            <input type="submit" value="send" class="send_message">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include('./partial/addConversation.ejs') %>
+    </main>
+
+    <script type="text/javascript" src="/js/toastify.js"></script>
+    <script type="text/javascript" src="/js/moment.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.4.0/dist/socket.io.min.js">
+    </script>
+    <script src="/js/script.js"></script>
+    <script>
+
+    </script>
+    <script>
+        const addUserBtn = document.querySelector('.add__btn');
+        const closeAddUser = document.querySelector('.close');
+        const addUserContainer = document.querySelector('.user__form-wrapper');
+        const messageContainer = document.querySelector('.message');
+        const messageBody = document.querySelector('.message_body');
+        const scrollToDown = document.querySelector('#scrollToDown');
+
+        const loggedInUserId = '<%=loggedInUser.userId%>';
+        const loggedInUserName = '<%=loggedInUser.userName%>';
+
+        let currentConversationId;
+        let participant;
+
+        const drg = document.querySelector('#drag');
+        let isClicked = false;
+        const dragAbleBtn = document.querySelector('.dragAbleBtn');
+        drg.addEventListener('click', function (event) {
+
+            drg.parentElement
+            if (event.target.classList.contains('user_container') || event.target.parentElement.parentElement
+                .classList.contains('user_container') || event.target.parentElement.parentElement.parentElement
+                .classList.contains('user_container')) {
+                this.classList.add('drag-list');
+
+            } else {
+
+                this.classList.remove('drag-list');
+                this.style.left = '0'
+                this.style.top = '0'
+            }
+
+        })
+
+        // initialing socket io 
+        const socket = io('<%=process.env.APP_URL%>');
+
+        socket.on('newMessage', (data) => {
+
+            if (data.message.conversationId === currentConversationId) {
+
+                let senderAvatar = data.message.sender.avatar ? `/upload/avatar/${data.message.sender.avatar}` :
+                    '/img/nophoto.png'
+
+                let messageClass = data.message.sender.id === loggedInUserId ? 'sender' : 'receiver';
+                let textClass = data.message.text ? 'sender_message' : 'noMessage'
+
+                let showAvatar = data.message.sender.id === loggedInUserId ? '' :
+                    `<img class="senderAvatar" src="${senderAvatar}" alt="${data.message.sender.userName}">`
+
+                let attachment = `<div class="attachment" >`
+                if (data.message.attachment && data.message.attachment.length > 0) {
+                    data.message.attachment.forEach((attach) => {
+                        attachment +=
+                            `<img class="attach-file" src="/upload/attachment/${attach}">`
+                    })
+                }
+                attachment += `</div>`;
+
+                let messageHTML;
+                if (data.message.sender.id === loggedInUserId) {
+                    messageHTML = `<div class="${messageClass}"><div class=" d-flex justify-content-start align-items-center">
+                                
+                                <div class="sender_message-container">
+                                    <p class="${textClass}"> ${data.message.text} </p>
+                                    ${attachment}
+                                    <div class="sended_time">${moment(data.message.dateTime).fromNow()}</div>
+                                </div>
+                            </div></div>`;
+
+                } else {
+                    messageHTML = `<div class="${messageClass}"><div class=" d-flex justify-content-start align-items-center">
+                                ${showAvatar}
+                                <div class="sender_message-container">
+                                    <p class="${textClass}"> ${data.message.text} </p>
+                                    ${attachment}
+                                    <div class="sended_time">${moment(data.message.dateTime).fromNow()}</div>
+                                </div>
+                            </div></div>`;
+
+                }
+
+                messageBody.insertAdjacentHTML('beforeend', messageHTML);
+                scrollToDown.scrollTop = scrollToDown.scrollHeight;
+            }
+
+        })
+
+        // deleted message socket
+        socket.on('deleteCon', (deleteMsg) => {
+            const conversationDeleteMsgToast = Toastify({
+                text: "conversation delete by user!",
+                duration: 1000,
+            });
+
+            conversationDeleteMsgToast.showToast();
+
+            setTimeout(() => {
+                location.reload()
+            }, 5000);
+        })
+
+        function addUserShow() {
+            addUserContainer.classList.add('show');
+        }
+
+        function addUserHide() {
+            addUserContainer.classList.remove('show');
+        }
+        addUserBtn.addEventListener('click', () => {
+            addUserShow();
+        });
+        closeAddUser.addEventListener('click', () => {
+            addUserHide();
+        });
+
+
+
+        // addConversation.ejs
+        const input = document.querySelector('input#username')
+        const doneTypingInterval = 500;
+        const searchedUserContainer = document.querySelector('.searched_user-container')
+        let typingTimer;
+
+        const failureCreatingConversation = Toastify({
+            text: "Error creating a conversation!",
+            duration: 3000,
+        });
+
+        input.addEventListener('keyup', function (e) {
+            clearTimeout(typingTimer)
+            searchedUserContainer.style.display = 'none'
+
+            if (input.value) {
+                typingTimer = setTimeout(searchUser, doneTypingInterval);
+            }
+        })
+        input.addEventListener('keydown', function (e) {
+            clearTimeout(typingTimer)
+        })
+
+        async function searchUser() {
+
+            const response = await fetch('/inbox/search', {
+                method: 'POST',
+                body: JSON.stringify({
+                    user: input.value
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                }
+            });
+
+            const result = await response.json()
+            if (result.error) {
+
+                const errPlaceHolder = document.querySelector('p.error');
+                errPlaceHolder.innerHTML = result.error.common.msg
+            } else {
+                let generateHtml = `<ul class="m-0 p-0">`
+
+                result.forEach((user) => {
+
+                    const avatar = user.avatar ? './upload/avatar/' + user.avatar : './img/nophoto.png'
+
+                    generateHtml += `<li style="cursor:pointer" class="searched_user rounded my-2 px-3 py-2 d-inline-block " onclick="createConversation('${user._id}','${user.userName}','${user.avatar}')">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img src="${avatar}" width="32px" alt="">
+                        <h4 class="searched_user-name">${user.userName}</h4>
+                    </div>
+                </li>`
+                })
+
+                generateHtml += "</ul>"
+                searchedUserContainer.innerHTML = generateHtml;
+                searchedUserContainer.style.display = 'block';
+            }
+        }
+
+        async function createConversation(participant_id, userName, avatar) {
+            try {
+                const response = await fetch('/inbox/conversation', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        participant: userName,
+                        id: participant_id,
+                        avatar: avatar != 'undefined' ? avatar : null
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8",
+                    }
+                })
+                const result = await response.json();
+
+                if (!result.error) {
+                    searchedUserContainer.style.display = 'none';
+                    input.value = userName
+                    // reload after 1 second
+                    setTimeout(() => {
+                        location.reload()
+                    }, 1000);
+                } else {
+                    throw new Error(result.error.common.msg)
+                }
+            } catch (err) {
+                failureCreatingConversation.showToast()
+            }
+        }
+
+        // get message
+        const attach = document.getElementById('attach');
+        const attachBtn = document.getElementById('attach-btn');
+        attachBtn.addEventListener('click', function () {
+            attach.click()
+        })
+
+        async function getMessages(conversation_id, creator_name) {
+            
+            const mh = document.querySelector('.message_head');
+            const messagesFailureToast = Toastify({
+                text: "Error loading messages!",
+                duration: 1000,
+            });
+            
+
+            const response = await fetch(`/inbox/message/${conversation_id}`, {
+                method: 'GET',
+            });
+            const result = await response.json();
+
+            if (!result.error && result.data) {
+                messageContainer.classList.remove('d-none')
+                messageContainer.classList.add('d-flex')
+
+                const {
+                    data,
+                    user,
+                    conversation_id
+                } = result
+                
+                messageContainer.removeChild(mh);
+
+                const messageHead = `<div class="message_head d-flex justify-content-between align-items-center py-2 px-3 ">
+                        <h3 class="conversationUserName">${creator_name}</h3>
+                        <div onclick="deleteConversation()" class="deleteConversation btn btn-danger">dlt</div>
+                    </div>`
+                messageContainer.insertAdjacentHTML('afterbegin', messageHead);
+
+                participant = data.participant;
+                currentConversationId = conversation_id
+
+                if (data.message) {
+                    let allMessage = ''
+
+                    if (data.message.length > 0) {
+                        data.message.forEach((msg) => {
+
+                            let senderAvatar = msg.sender.avatar ? `/upload/avatar/${msg.sender.avatar}` :
+                                '/img/nophoto.png'
+
+                            let messageClass = msg.sender.id === loggedInUserId ? 'sender' : 'receiver';
+                            let textClass = msg.text ? 'sender_message' : 'noMessage'
+
+                            let showAvatar = msg.sender.id === loggedInUserId ? '' :
+                                `<img class="senderAvatar" src="${senderAvatar}" alt="${msg.sender.userName}">`
+
+                            let attachment = `<div class="attachment" >`
+                            if (msg.attachment && msg.attachment.length > 0) {
+
+                                msg.attachment.forEach((attach) => {
+                                    attachment +=
+                                        `<img class="attach-file" src="/upload/attachment/${attach}">`
+                                })
+                            }
+                            attachment += `</div>`;
+
+                            let messageHTML = `<div class="${messageClass}"><div class=" d-flex justify-content-start align-items-center">
+                                ${showAvatar}
+                                <div class="sender_message-container">
+                                    <p class="${textClass}"> ${msg.text} </p>
+                                    ${attachment}
+                                    <div class="sended_time">${moment(msg.dateTime).fromNow()}</div>
+                                </div>
+                            </div></div>`;
+                            allMessage += messageHTML
+
+                            messageBody.innerHTML = allMessage;
+
+                            scrollToDown.scrollTop = scrollToDown.scrollHeight;
+                        })
+                    } else {
+
+                        messageBody.innerHTML = `<div class="message_row"></div>`
+                        scrollToDown.scrollTop = scrollToDown.scrollHeight;
+                    }
+
+                }
+            } else {
+                messagesFailureToast.showToast()
+            }
+
+        }
+        // delete conversation
+        const conversationDeleteToast = Toastify({
+                text: "conversation delete successfully!",
+                duration: 1000,
+            });
+            const conversationDeleteFailureToast = Toastify({
+                text: "Error to Delete conversation !",
+                duration: 1000,
+            });
+            
+        async function deleteConversation() {
+            const response = await fetch(`/inbox/${currentConversationId}`, {
+                method: 'DELETE',
+                body: 'deleted'
+            });
+
+            const result = await response.json();
+
+            if (result.error) {
+                conversationDeleteFailureToast.showToast();
+            } else {
+                conversationDeleteToast.showToast()
+
+                setTimeout(() => {
+                    location.reload()
+                }, 5000);
+            }
+        }
+
+        // send message
+        const sendMessageForm = document.getElementById('sendMessageForm');
+
+        sendMessageForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const sendMessageFailureToast = Toastify({
+                text: "Error sending message",
+                duration: 1000,
+            });
+
+            const messageData = new FormData(sendMessageForm);
+
+            messageData.append('receiverId', participant.id)
+            messageData.append('receiverName', participant.userName)
+            messageData.append('avatar', participant.avatar)
+            messageData.append('conversationId', currentConversationId)
+
+            const request = await fetch('/inbox/message', {
+                method: 'POST',
+                body: messageData,
+            });
+            const result = await request.json();
+
+            if (!result.error) {
+                sendMessageForm.reset();
+            } else {
+                sendMessageFailureToast.showToast()
+            }
+        })
+    </script>
+    </body>
+
+    </html>

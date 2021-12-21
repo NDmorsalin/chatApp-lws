@@ -1,0 +1,83 @@
+<%- include('./partial/header.ejs') %>
+<main class="container p-0 my-4 login-container
+    ">
+    <div class="row g-0 h-100">
+
+        <div class="col-md-12 g-0 h-100 ">
+            <div class="userpage__container px-5 py-3 ">
+                <h3 class="title text-info text-center m-3"> Manage </h3>
+                <div class="add__user">
+                    <div class="add__btn">+</div>
+                    <div class="overLay"></div>
+                    <%- include('./partial/addUserForm.ejs') %>
+                </div>
+                <div class="responsive_table">
+                    <table class="table table-striped table-dark">
+                        <thead>
+                            <tr class="table-info">
+                                <th scope="col">Name </th>
+                                <th scope="col">Email</th>
+                                <th scope="col" class="text-center">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% users.forEach((user)=> { %>
+
+                            <tr id="<%=user._id %>">
+                                <td class="d-flex justify-content-start align-items-center">
+                                    <% if(user.avatar){%>
+                                    <img src="/upload/avatar/<%= user.avatar %>" alt="" class="user_img d-block">
+                                    <% }else {%>
+                                    <img src="/img/nophoto.png" alt="" class="user_img d-block">
+                                    <%} %>
+                                    <p class="userName m-0 mx-3 "> <%= user.userName %> </p>
+                                </td>
+                                <td><%= user.email %> </td>
+                                <td class="text-center deleteUserBtn" onclick="deleteUser('<%=user._id %>')">@mdo</td>
+                            </tr>
+                            <% }) %>
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script type="text/javascript" src="/js/toastify.js"></script>
+
+<script src="/js/user/addUserform.js"></script>
+<script src="/js/user/deleteUser.js"></script>
+<script src="/js/script.js"></script>
+<script>
+    const addUserBtn = document.querySelector('.add__btn');
+    const closeAddUser = document.querySelector('.close');
+    const overLay = document.querySelector('.overLay');
+    const addUserContainer = document.querySelector('.user__form-wrapper');
+
+    function addUserShow() {
+        addUserContainer.classList.add('show');
+        overLay.classList.add('show');
+    }
+
+    function addUserHide() {
+        addUserContainer.classList.remove('show');
+        overLay.classList.remove('show');
+    }
+    addUserBtn.addEventListener('click', () => {
+        addUserShow();
+    });
+    closeAddUser.addEventListener('click', () => {
+        addUserHide();
+    });
+
+    overLay.addEventListener('click', () => {
+        addUserHide();
+    });
+    
+</script>
+</body>
+
+</html>

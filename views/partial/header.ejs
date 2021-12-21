@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/tostify.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="px-5 px-sm-0">
+    <header class="container">
+        <nav class="nav__container py-3 d-flex justify-content-between align-items-center">
+            <div class="logo"><a href="#">chat app</a></div>
+
+            <div class="sideNav">
+                <div class="container position-relative">
+                    <div class="nav_toggler d-md-none d-sm-block" id="navToggler">
+                        <div class="bg-dark m-2"></div>
+                        <div class="bg-dark m-2"></div>
+                        <div class="bg-dark m-2"></div>
+
+                    </div>
+                </div>
+                <% if(loggedInUser && loggedInUser.userName){ %>
+                <div class="menu_container" id="navContainer">
+                    <a href="/inbox" class="menu_link">inbox</a>
+                    <a href="/user" class="menu_link">User</a>
+                    <a href="#" class="menu_link" id="logOut"> <img src="/upload/avatar/<%=loggedInUser.avatar%>" alt="" class="my-photo">
+                        logout</a>
+                </div>
+                <% }else{ %>
+                <div class="menu_container" id="navContainer">
+                    <a href="/inbox" class="menu_link">inbox</a>
+                    <a href="/user" class="menu_link">User</a>
+                    <a href="/" class="menu_link" id="logOut">login</a>
+                </div>
+                <% } %>
+            </div>
+
+        </nav>
+    </header>

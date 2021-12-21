@@ -1,0 +1,34 @@
+<div class="user__form-wrapper">
+    <div class="add__user_form-container">
+        <div class="close btn-close"></div>
+        <h3 class="text-white">Create User</h3>
+        <form action="/user" method="post" id="add__user_form" class="add__user_form" enctype="multipart/form-data">
+            <div class="input_password">
+                <span class="inputColor">
+                    <input name="userName" id="username" placeholder="Enter username" type="text"
+                        id="username" value="">
+                </span>
+                <p class="error userName-error"> </p>
+                <span class="inputColor">
+                    <input id="email" name="email" placeholder="Enter Email" type="email" id="email"
+                        value="">
+                </span>
+                <p class="error email-error"> </p>
+                <span class="inputColor">
+                    <input id="mobile" name="mobile" placeholder="Enter mobile" type="text"
+                        id="mobile" value="">
+                </span>
+                <p class="error mobile-error"> </p>
+                <span class="inputColor">
+                    <input name="password" id="password" placeholder="Enter Password"
+                        type="password" id="password" value="">
+                </span>
+                <p class="error password-error"> </p>
+                <input type="file" id="avatar" name="avatar" class="userAvater mt-2 mb-2">
+                <p class="error avatar-error"> </p>
+
+                <input type="submit" class="btn " value="Add user">
+            </div>
+        </form>
+    </div>
+</div>

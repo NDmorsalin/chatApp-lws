@@ -1,0 +1,56 @@
+<%- include('./partial/header.ejs') %>
+<main class="container p-0 my-4 login-container
+    ">
+    <div class="row h-100">
+        <div class="col-md-5 d-none d-md-block h-100 px-0">
+            <div class="hero-img d-flex flex-column justify-content-center">
+                <img class="img-fluid" src="/img/hero.png" alt="">
+            </div>
+        </div>
+        <div class="col-md-7 h-100 px-0">
+            <div class="login-form-container d-flex align-items-center justify-content-center flex-column">
+                <div class="avatar text-center  my-3"><img src="/img/avater.png
+                        " alt=""></div>
+                <h3 class="appTitle text-white">Login - chat app</h3>
+                <form action="/" method="post" class="login-form text-center my-3">
+                    <div class="input_email">
+                        <span class="inputColor">
+                            <input placeholder="Enter Email or Phone" type="text" id="phoneORemail" name="userName"
+                                value="<%= data.userName %> ">
+                        </span>
+                        <% if(error.userName){ %>
+
+                        <p class="error show"> <%= error.userName.msg %> </p>
+                        <% } %>
+
+                    </div>
+
+                    <div class="input_password">
+                        <span class="inputColor">
+                            <input placeholder="Enter Password" type="password" id="password" value="" name="password">
+                        </span>
+                        <% if(error.password){ %>
+
+                        <p class="error show"> <%= error.password.msg %> </p>
+                        <% } %>
+                        <% if(error.common){ %>
+
+                        <p class="error show"> <%= error.common.msg %> </p>
+                        <% } %>
+                    </div>
+                    <input type="submit" class="btn" value="Login">
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script type="text/javascript" src="/js/toastify.js"></script>
+<script src="/js/script.js"></script>
+
+<script>
+  
+</script>
+</body>
+
+</html>

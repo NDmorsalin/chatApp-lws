@@ -1,0 +1,22 @@
+@mixin borderLinerParent {
+    position: relative;
+  background: $bg-linier;
+  padding: 3px;
+  display: block;
+  border-radius: 5px;
+  width: 100%;
+  margin-top: 1rem;
+}
+@mixin borderLinerChild {
+    position: relative;
+    display: inherit;
+    border-radius: inherit;
+    margin: 0;
+    border: none;
+    outline: none;
+    padding: 0.5rem 1rem;
+    z-index: 1;
+    width: 100%;
+    background: #26282c;
+    color: $white;
+}

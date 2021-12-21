@@ -1,0 +1,413 @@
+@import "parsial/custome-bootstrap";
+@import "parsial/mixin";
+@import "../node_modules/bootstrap/scss/bootstrap";
+$bg-linier: linear-gradient(89.12deg, #52d794 0.71%, #00b3bd 99.25%);
+
+body {
+  background: $bg-linier;
+  height: 100vh;
+  width: 100vw;
+}
+a {
+  text-decoration: none;
+}
+
+.logo {
+  a {
+    font-size: 2.5rem;
+    color: #26282c;
+    font-weight: bold;
+  }
+}
+.nav_toggler {
+  div {
+    width: 2rem;
+    height: 4px;
+  }
+}
+.my-photo {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+
+.menu_container {
+  a {
+    color: #26282c;
+    font-size: 1.2rem;
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    &:hover {
+      background: #bd009d62 112.71%;
+    }
+  }
+}
+
+.login-container {
+  height: 70%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.hero-img {
+  height: 100%;
+  background-color: #1f222e;
+  padding: 6rem;
+}
+.login-form-container {
+  height: 100%;
+  background-color: #171c2a;
+  .avatar {
+    img {
+      width: 5rem;
+    }
+  }
+}
+.login-form {
+  width: 60%;
+  .btn {
+    margin-top: 1rem;
+    width: 50%;
+    background: $bg-linier;
+  }
+}
+.error {
+  color: $danger;
+  text-align: left;
+  margin: 0;
+  display: none;
+  margin-bottom: 1rem;
+  &.show {
+    display: block;
+  }
+}
+.inputColor {
+  @include borderLinerParent;
+  *:not(span) {
+    @include borderLinerChild;
+  }
+}
+/*  message page */
+// conversation section
+.message-container {
+  @extend .login-container;
+  .add__user {
+    position: absolute;
+    bottom: -0.5rem;
+    left: 1rem;
+    .add__btn {
+      color: red;
+    }
+  }
+}
+
+.message-list {
+  @extend .hero-img;
+  padding: 1rem 0rem;
+  overflow: auto;
+}
+.search-wrapper {
+  @extend .inputColor;
+}
+.user_container {
+  cursor: pointer;
+  color: $white;
+  padding: 1rem;
+  .user_avatar {
+    width: 2.8rem;
+  }
+  p {
+    &.user_name {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    margin: 0;
+    margin-left: 1rem;
+  }
+  &:nth-child(even) {
+    background-color: #1f2437;
+  }
+}
+.searched_user {
+  background-color: rgba(0, 0, 0, 0.5);
+  img {
+    width: 2rem;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 1rem;
+  }
+}
+// message section
+.message {
+  @extend .login-form-container;
+  position: relative;
+
+  .message_head {
+    color: $white;
+    background-color: #1f2437;
+    position: absolute;
+    width: 100%;
+    top: 0;
+  }
+  .message_body-container {
+    padding: 3rem 0;
+    height: 100%;
+    display: flex;
+    align-items: end;
+  }
+  .message_body {
+    color: $white;
+    padding: 1rem;
+    max-height: 100%;
+    width: 100%;
+    overflow: auto;
+    .sender {
+      display: flex;
+      justify-content: end;
+      padding: 0.5rem;
+      .sender_message {
+        margin: 0 1rem;
+        padding: 1rem;
+        background-color: #c4c4c4;
+        border-radius: 1rem 1rem 1rem 0;
+        color: $black;
+      }
+    }
+    .receiver {
+      display: flex;
+      justify-content: start;
+      .sender_message {
+        margin: 0 1rem;
+        padding: 1rem;
+        background-color: #c4c4c4;
+        border-radius: 1rem 1rem 0 1rem;
+        color: $black;
+      }
+    }
+    .attachment {
+      margin-left: 1rem;
+    }
+    .attach-file {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+    }
+    .senderAvatar {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+    }
+    .sender_img {
+      width: 2rem;
+    }
+    .sender_message-container {
+      max-width: 350px;
+    }
+
+    .noMessage {
+      display: none;
+    }
+    .sended_time {
+      margin: 0 1rem;
+    }
+  }
+  .message_footer {
+    color: $white;
+    background-color: #1f2437;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    .message_area {
+      width: 80%;
+      input {
+        width: 100%;
+        background-color: #000;
+        color: $white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 5px;
+        border: 0;
+      }
+    }
+  }
+}
+
+/* user page  */
+.userpage__container {
+  @extend .login-form-container;
+  position: relative;
+  .responsive_table {
+    overflow-x: auto;
+  }
+  .user_img {
+    width: 1.5rem;
+  }
+}
+
+.add__user {
+  .add__btn {
+    width: 3rem;
+    height: 3rem;
+    margin: 1.5rem auto;
+    cursor: pointer;
+    background-color: $white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $dark;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .overLay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0%;
+    height: 0%;
+    background-color: rgba(172, 172, 172, 0.384);
+    filter: blur(4px);
+    -moz-filter: blur(4px);
+    &.show {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .add__user_form-container {
+    padding: 3rem;
+    @include borderLinerChild;
+    .error {
+      margin-bottom: 0.2rem;
+    }
+    .inputColor {
+      padding: 2px;
+      margin-top: 0.5rem;
+      *:not(span) {
+        padding: 0.2rem 0.5rem;
+      }
+    }
+    input[type="submit"] {
+      background: $bg-linier;
+      width: 100%;
+    }
+  }
+}
+
+.close {
+  background-color: $white;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  position: absolute;
+  right: -1rem;
+  top: -1rem;
+}
+.user__form-wrapper {
+  @include borderLinerParent;
+  margin: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: 0.5s;
+  &.show {
+    max-width: 350px;
+    width: 100%;
+    height: auto;
+    opacity: 1;
+    visibility: visible;
+  }
+}
+/* media Query area */
+@media screen and (max-width: 991px) {
+  .login-container {
+    .hero-img {
+      padding: 4rem;
+    }
+  }
+  .message-list {
+    padding: 1rem 0rem !important;
+  }
+  .user_container {
+    padding: 1rem;
+    .last_update {
+      font-size: 1.3rem;
+    }
+    .user_avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+    }
+    p {
+      &.user_name {
+        font-size: 1.1rem;
+        font-weight: bold;
+      }
+      &.last_message {
+        font-size: 0.8rem;
+      }
+      margin-left: 0.6rem;
+    }
+  }
+}
+@media screen and (max-width: 767px) {
+  .nav_toggler {
+    position: absolute;
+    // right will change 0% to 40%
+    right: 0;
+    top: -1rem;
+    &.active {
+      right: 40%;
+      top: 2rem;
+    }
+  }
+
+  .menu_container {
+    position: absolute;
+    z-index: 2;
+    width: 40%;
+    height: 100%;
+    // right position is change -100% to 0
+    right: -100%;
+    top: 0;
+    padding: 1rem 0;
+    background-color: #26282c;
+    transition: 0.5s;
+
+    a {
+      display: block;
+      color: #fff;
+      &:hover {
+        background: #bd009d62 112.71%;
+      }
+    }
+
+    &.active {
+      right: 0;
+    }
+  }
+  input[type="submit"] {
+    width: 100% !important;
+  }
+
+  // drag user list
+  .drag-list {
+    cursor: pointer !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    background-color: red;
+    position: absolute !important;
+    left: 0;
+    bottom: 0;
+    z-index: 100;
+    border-radius: 50%;
+    *{
+      display: none !important;
+    }
+  }
+}
